@@ -35,7 +35,4 @@ public class BaseResponse<T> implements Serializable {
         this.success = code == SUCCESS_CODE ? true : false;
         this.data = data;
     }
-
-
-
 }

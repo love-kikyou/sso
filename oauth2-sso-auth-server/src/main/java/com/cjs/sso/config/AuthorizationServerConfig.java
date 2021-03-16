@@ -30,16 +30,19 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        /*用来配置令牌端点(Token Endpoint)的安全约束.*/
         security.allowFormAuthenticationForClients();
         security.tokenKeyAccess("isAuthenticated()");
     }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        /*oauth2通过JdbcClientDetailsService从数据库读取相应的配置*/
         clients.jdbc(dataSource);
     }
 
     @Override
+    /*用来配置授权（authorization）以及令牌（token）的访问端点和令牌服务(token services)*/
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.accessTokenConverter(jwtAccessTokenConverter());
         endpoints.tokenStore(jwtTokenStore());
@@ -63,8 +66,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setSigningKey("cjs");   //  Sets the JWT signing key
+        jwtAccessTokenConverter.setSigningKey("cjs");   // 设置签名密钥
         return jwtAccessTokenConverter;
     }
-
 }

@@ -34,6 +34,12 @@ public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     private PermissionService permissionService;
 
+    /**
+     * 需要判断密码
+     * @param username
+     * @return
+     * @throws UsernameNotFoundException
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         SysUser sysUser = userService.getByUsername(username);
@@ -48,11 +54,8 @@ public class MyUserDetailsService implements UserDetailsService {
                 authorityList.add(new SimpleGrantedAuthority(sysPermission.getCode()));
             }
         }
-
         MyUser myUser = new MyUser(sysUser.getUsername(), passwordEncoder.encode(sysUser.getPassword()), authorityList);
-
-        log.info("登录成功！用户: {}", JSON.toJSONString(myUser));
-
+        //log.info("登录成功！用户: {}", JSON.toJSONString(myUser));
         return myUser;
     }
 }

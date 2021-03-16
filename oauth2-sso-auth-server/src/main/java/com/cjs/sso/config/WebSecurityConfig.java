@@ -4,6 +4,7 @@ import com.cjs.sso.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -26,10 +27,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        //auth.daoAuthenticationProvider()
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
+        /*静态资源的过滤，且绕过filter*/
         web.ignoring().antMatchers("/assets/**", "/css/**", "/images/**");
     }
 
@@ -38,11 +41,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin()
                 .loginPage("/login")
                 .and()
+                /*配置路径拦截*/
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
                 .anyRequest()
                 .authenticated()
-                .and().csrf().disable().cors();
+                .and().csrf().disable().cors()
+
+                .and()
+                .sessionManagement()
+                .maximumSessions(3)
+        ;
     }
 
     @Bean
@@ -50,4 +59,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    /*@Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider(){
+        DaoAuthenticationProvider daoAuthenticationProvider=new DaoAuthenticationProvider();
+        //默认setHideUserNotFoundExceptions为true
+        daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(new BCryptPasswordEncoder());
+
+        return daoAuthenticationProvider;
+    }*/
 }
